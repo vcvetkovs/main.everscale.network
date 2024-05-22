@@ -87,14 +87,14 @@ init_env() {
     # returned to you (i.e., to the controlling smart contract of your validator) immediately after elections.
     MAX_FACTOR=${MAX_FACTOR:-3}
     ELECTOR_ADDR="-1:3333333333333333333333333333333333333333333333333333333333333333"
-    TON_BUILD_DIR=""
+    EVER_BUILD_DIR=""
     BLOCKCHAIN_TIMEOUT="60"
-    TONOS_CLI_TIMEOUT="120s"
+    EVER_CLI_TIMEOUT="120s"
 
     if [ "${RUST_NET_ENABLE}" = "yes" ]; then
-        TON_NODE_ROOT="/ever-node"
-        UTILS_DIR="${TON_NODE_ROOT}/tools"
-        CONFIGS_DIR="${TON_NODE_ROOT}/configs"
+        EVER_NODE_ROOT="/ever-node"
+        UTILS_DIR="${EVER_NODE_ROOT}/tools"
+        CONFIGS_DIR="${EVER_NODE_ROOT}/configs"
         KEYS_DIR="${CONFIGS_DIR}/keys"
         WORK_DIR="${UTILS_DIR}"
         MSIG_ADDR_FILE="${CONFIGS_DIR}/${VALIDATOR_NAME}.addr"
@@ -146,7 +146,7 @@ init_env() {
 
     # Supported values: fift, solidity
     ELECTOR_TYPE=${ELECTOR_TYPE:-fift}
-    TONOS_CLI_RETRIES=${TONOS_CLI_RETRIES:-5}
+    EVER_CLI_RETRIES=${EVER_CLI_RETRIES:-5}
     # This file is created during 1st script run in dynamic staking mode
     # It is used to split the initial amount of tokens among 2 election cycles
     VALIDATOR_INIT_BALANCE_FILE=${KEYS_DIR}/validator_init_balance.txt
@@ -206,7 +206,7 @@ check_env() {
     fi
 
     if [ ! -f "${CONFIGS_DIR}/SafeMultisigWallet.abi.json" ]; then
-        cd ${CONFIGS_DIR} && wget https://raw.githubusercontent.com/tonlabs/ton-labs-contracts/master/solidity/safemultisig/SafeMultisigWallet.abi.json
+        cd ${CONFIGS_DIR} && wget https://raw.githubusercontent.com/everx-labs/ton-labs-contracts/master/solidity/safemultisig/SafeMultisigWallet.abi.json
     fi
 
     if [ "${ELECTOR_TYPE}" = "solidity" ] && [ ! -f ${CONFIGS_DIR}/Elector.abi.json ]; then
@@ -216,24 +216,24 @@ check_env() {
 
     cd ${WORK_DIR}
     if [ "${DEPOOL_ENABLE}" = "yes" ]; then
-        ${UTILS_DIR}/tonos-cli config --retries "${TONOS_CLI_RETRIES}" \
+        ${UTILS_DIR}/ever-cli config --retries "${EVER_CLI_RETRIES}" \
             --addr "${DEPOOL_ADDR}" --wallet "${MSIG_ADDR}" --keys "${KEYS_DIR}/msig.keys.json"
     else
-        ${UTILS_DIR}/tonos-cli config --retries "${TONOS_CLI_RETRIES}"
+        ${UTILS_DIR}/ever-cli config --retries "${EVER_CLI_RETRIES}"
     fi
 
     if [ "$DEBUG" = "yes" ]; then
-        echo "DEBUG: ${WORK_DIR}/tonos-cli.conf.json BEGIN"
-        cat ${WORK_DIR}/tonos-cli.conf.json
-        echo "DEBUG: ${WORK_DIR}/tonos-cli.conf.json END"
+        echo "DEBUG: ${WORK_DIR}/ever-cli.conf.json BEGIN"
+        cat ${WORK_DIR}/ever-cli.conf.json
+        echo "DEBUG: ${WORK_DIR}/ever-cli.conf.json END"
     fi
 
     if [ -n "${SDK_URL}" ]; then
-        ${UTILS_DIR}/tonos-cli config --url "${SDK_URL}"
+        ${UTILS_DIR}/ever-cli config --url "${SDK_URL}"
     fi
 
     # '--lifetime 500' is needed for unstable front
-    ${UTILS_DIR}/tonos-cli config --lifetime 500
+    ${UTILS_DIR}/ever-cli config --lifetime 500
 }
 
 recover_stake() {
@@ -244,8 +244,8 @@ recover_stake() {
 
     case ${VALIDATOR_TYPE} in
     "sdk")
-        TONOS_CLI_OUTPUT=$(timeout ${TONOS_CLI_TIMEOUT} ${UTILS_DIR}/tonos-cli account "${MSIG_ADDR}")
-        VALIDATOR_ACTUAL_BALANCE_NANO=$(echo "${TONOS_CLI_OUTPUT}" | awk '/balance/ {print $2}') # in nano tokens
+        EVER_CLI_OUTPUT=$(timeout ${EVER_CLI_TIMEOUT} ${UTILS_DIR}/ever-cli account "${MSIG_ADDR}")
+        VALIDATOR_ACTUAL_BALANCE_NANO=$(echo "${EVER_CLI_OUTPUT}" | awk '/balance/ {print $2}') # in nano tokens
         ;;
     "console")
         CONSOLE_OUTPUT=$(${UTILS_DIR}/console -C ${CONFIGS_DIR}/console.json -j -c "getaccount ${MSIG_ADDR}")
@@ -262,19 +262,19 @@ recover_stake() {
 
     case ${ELECTOR_TYPE} in
     "fift")
-        TONOS_CLI_OUTPUT=$(timeout ${TONOS_CLI_TIMEOUT} ${UTILS_DIR}/tonos-cli runget ${ELECTOR_ADDR} compute_returned_stake "${MSIG_ADDR_HEX}" 2>&1)
-        RECOVER_AMOUNT_HEX=$(echo "${TONOS_CLI_OUTPUT}" | awk -F'"' '/Result:/ {print $2}')
+        EVER_CLI_OUTPUT=$(timeout ${EVER_CLI_TIMEOUT} ${UTILS_DIR}/ever-cli runget ${ELECTOR_ADDR} compute_returned_stake "${MSIG_ADDR_HEX}" 2>&1)
+        RECOVER_AMOUNT_HEX=$(echo "${EVER_CLI_OUTPUT}" | awk -F'"' '/Result:/ {print $2}')
         ;;
     "solidity")
         case ${VALIDATOR_TYPE} in
         "sdk")
-            TONOS_CLI_OUTPUT=$(timeout ${TONOS_CLI_TIMEOUT} ${UTILS_DIR}/tonos-cli run ${ELECTOR_ADDR} compute_returned_stake "{\"wallet_addr\":\"${MSIG_ADDR_HEX}\"}" --abi ${CONFIGS_DIR}/Elector.abi.json 2>&1)
+            EVER_CLI_OUTPUT=$(timeout ${EVER_CLI_TIMEOUT} ${UTILS_DIR}/ever-cli run ${ELECTOR_ADDR} compute_returned_stake "{\"wallet_addr\":\"${MSIG_ADDR_HEX}\"}" --abi ${CONFIGS_DIR}/Elector.abi.json 2>&1)
             ;;
         "console")
-            TONOS_CLI_OUTPUT=$(timeout ${TONOS_CLI_TIMEOUT} ${UTILS_DIR}/tonos-cli run --boc "${TMP_DIR}/elector_account.boc" compute_returned_stake "{\"wallet_addr\":\"${MSIG_ADDR_HEX}\"}" --abi ${CONFIGS_DIR}/Elector.abi.json 2>&1)
+            EVER_CLI_OUTPUT=$(timeout ${EVER_CLI_TIMEOUT} ${UTILS_DIR}/ever-cli run --boc "${TMP_DIR}/elector_account.boc" compute_returned_stake "{\"wallet_addr\":\"${MSIG_ADDR_HEX}\"}" --abi ${CONFIGS_DIR}/Elector.abi.json 2>&1)
             ;;
         esac
-        RECOVER_AMOUNT_HEX=$(echo "${TONOS_CLI_OUTPUT}" | awk '/value0/ {print $2}' | tr -d '"')
+        RECOVER_AMOUNT_HEX=$(echo "${EVER_CLI_OUTPUT}" | awk '/value0/ {print $2}' | tr -d '"')
         ;;
     *)
         echo "ERROR: unknown ELECTOR_TYPE (${ELECTOR_TYPE})"
@@ -302,7 +302,7 @@ recover_stake() {
             fi
             mv ${WORK_DIR}/recover-query.boc "${TMP_DIR}/recover-query.boc"
         else
-            "${TON_BUILD_DIR}/crypto/fift" -I "${CRYPTO_LIBS}" -s recover-stake.fif "${TMP_DIR}/recover-query.boc"
+            "${EVER_BUILD_DIR}/crypto/fift" -I "${CRYPTO_LIBS}" -s recover-stake.fif "${TMP_DIR}/recover-query.boc"
         fi
 
         if [ -f "${TMP_DIR}/recover-query.boc" ]; then
@@ -320,19 +320,19 @@ recover_stake() {
         set -x
         case ${VALIDATOR_TYPE} in
         "sdk")
-            echo "INFO: tonos-cli call submitTransaction attempt..."
-            if ! timeout ${TONOS_CLI_TIMEOUT} "${UTILS_DIR}/tonos-cli" call "${MSIG_ADDR}" submitTransaction \
+            echo "INFO: ever-cli call submitTransaction attempt..."
+            if ! timeout ${EVER_CLI_TIMEOUT} "${UTILS_DIR}/ever-cli" call "${MSIG_ADDR}" submitTransaction \
                 "{\"dest\":\"${ELECTOR_ADDR}\",\"value\":\"1000000000\",\"bounce\":true,\"allBalance\":false,\"payload\":\"${RECOVER_QUERY_BOC}\"}" \
                 --abi "${CONFIGS_DIR}/SafeMultisigWallet.abi.json" \
                 --sign "${KEYS_DIR}/msig.keys.json"; then
-                echo "INFO: tonos-cli call submitTransaction attempt... FAIL"
+                echo "INFO: ever-cli call submitTransaction attempt... FAIL"
                 exit_and_clean 1 $LINENO
             else
-                echo "INFO: tonos-cli call submitTransaction attempt... PASS"
+                echo "INFO: ever-cli call submitTransaction attempt... PASS"
             fi
             ;;
         "console")
-            if ! "${UTILS_DIR}/tonos-cli" message "${MSIG_ADDR}" submitTransaction \
+            if ! "${UTILS_DIR}/ever-cli" message "${MSIG_ADDR}" submitTransaction \
                 "{\"dest\":\"${ELECTOR_ADDR}\",\"value\":\"1000000000\",\"bounce\":true,\"allBalance\":false,\"payload\":\"${RECOVER_QUERY_BOC}\"}" \
                 --abi "${CONFIGS_DIR}/SafeMultisigWallet.abi.json" \
                 --sign "${KEYS_DIR}/msig.keys.json" \
@@ -373,19 +373,19 @@ recover_stake() {
 prepare_for_elections() {
     case ${ELECTOR_TYPE} in
     "fift")
-        TONOS_CLI_OUTPUT=$(timeout ${TONOS_CLI_TIMEOUT} ${UTILS_DIR}/tonos-cli runget ${ELECTOR_ADDR} active_election_id 2>&1)
-        ACTIVE_ELECTION_ID_HEX=$(echo "${TONOS_CLI_OUTPUT}" | awk -F'"' '/Result:/ {print $2}')
+        EVER_CLI_OUTPUT=$(timeout ${EVER_CLI_TIMEOUT} ${UTILS_DIR}/ever-cli runget ${ELECTOR_ADDR} active_election_id 2>&1)
+        ACTIVE_ELECTION_ID_HEX=$(echo "${EVER_CLI_OUTPUT}" | awk -F'"' '/Result:/ {print $2}')
         ;;
     "solidity")
         case ${VALIDATOR_TYPE} in
         "sdk")
-            TONOS_CLI_OUTPUT=$(timeout ${TONOS_CLI_TIMEOUT} ${UTILS_DIR}/tonos-cli run ${ELECTOR_ADDR} active_election_id {} --abi ${CONFIGS_DIR}/Elector.abi.json 2>&1)
+            EVER_CLI_OUTPUT=$(timeout ${EVER_CLI_TIMEOUT} ${UTILS_DIR}/ever-cli run ${ELECTOR_ADDR} active_election_id {} --abi ${CONFIGS_DIR}/Elector.abi.json 2>&1)
             ;;
         "console")
-            TONOS_CLI_OUTPUT=$(timeout ${TONOS_CLI_TIMEOUT} ${UTILS_DIR}/tonos-cli run --boc "${TMP_DIR}/elector_account.boc" active_election_id {} --abi ${CONFIGS_DIR}/Elector.abi.json 2>&1)
+            EVER_CLI_OUTPUT=$(timeout ${EVER_CLI_TIMEOUT} ${UTILS_DIR}/ever-cli run --boc "${TMP_DIR}/elector_account.boc" active_election_id {} --abi ${CONFIGS_DIR}/Elector.abi.json 2>&1)
             ;;
         esac
-        ACTIVE_ELECTION_ID_HEX=$(echo "${TONOS_CLI_OUTPUT}" | awk '/value0/ {print $2}' | tr -d '"')
+        ACTIVE_ELECTION_ID_HEX=$(echo "${EVER_CLI_OUTPUT}" | awk '/value0/ {print $2}' | tr -d '"')
         ;;
     *)
         echo "ERROR: unknown ELECTOR_TYPE (${ELECTOR_TYPE})"
@@ -415,7 +415,7 @@ prepare_for_elections() {
     mkdir -p "${ELECTIONS_WORK_DIR}"
 
     if [ "${DEPOOL_ENABLE}" = "yes" ]; then
-        timeout ${TONOS_CLI_TIMEOUT} "${UTILS_DIR}/tonos-cli" depool --addr "${DEPOOL_ADDR}" events >"${ELECTIONS_WORK_DIR}/events.txt" 2>&1
+        timeout ${EVER_CLI_TIMEOUT} "${UTILS_DIR}/ever-cli" depool --addr "${DEPOOL_ADDR}" events >"${ELECTIONS_WORK_DIR}/events.txt" 2>&1
 
         set +eE
         set +o pipefail
@@ -423,7 +423,7 @@ prepare_for_elections() {
         DEPOOL_EVENTS=$(grep "^{" "${ELECTIONS_WORK_DIR}/events.txt" || true)
         if [ -z "${DEPOOL_EVENTS}" ]; then
             echo "ERROR: depool events are empty - this may be due to problems with depool (check your depool configuration) or the depool is just deployed (wait for next elections)"
-            echo "Verify '${UTILS_DIR}/tonos-cli depool --addr ${DEPOOL_ADDR} events' output"
+            echo "Verify '${UTILS_DIR}/ever-cli depool --addr ${DEPOOL_ADDR} events' output"
             exit_and_clean 1 $LINENO
         fi
 
@@ -441,7 +441,7 @@ prepare_for_elections() {
             fi
         else
             echo "ERROR: ACTIVE_ELECTION_ID_FROM_DEPOOL_EVENT (${ACTIVE_ELECTION_ID_FROM_DEPOOL_EVENT}) does not match to ACTIVE_ELECTION_ID (${ACTIVE_ELECTION_ID})"
-            echo "Verify '${UTILS_DIR}/tonos-cli depool --addr ${DEPOOL_ADDR} events' output"
+            echo "Verify '${UTILS_DIR}/ever-cli depool --addr ${DEPOOL_ADDR} events' output"
             exit_and_clean 1 $LINENO
         fi
         set -eE
@@ -465,7 +465,7 @@ create_elector_request() {
     fi
 
     if [ "${ELECTIONS_ARTEFACTS_CREATED}" = "0" ]; then
-        GLOBAL_CONFIG_15_RAW=$(${UTILS_DIR}/tonos-cli getconfig 15 2>&1)
+        GLOBAL_CONFIG_15_RAW=$(${UTILS_DIR}/ever-cli getconfig 15 2>&1)
         ELECTIONS_END_BEFORE=$(echo "$GLOBAL_CONFIG_15_RAW" | awk '/elections_end_before/ {print $2}' | tr -d ',')
         ELECTIONS_START_BEFORE=$(echo "$GLOBAL_CONFIG_15_RAW" | awk '/elections_start_before/ {print $2}' | tr -d ',')
         STAKE_HELD_FOR=$(echo "$GLOBAL_CONFIG_15_RAW" | awk '/stake_held_for/ {print $2}' | tr -d ',')
@@ -503,7 +503,7 @@ create_elector_request() {
                 exit_and_clean 1 $LINENO
             fi
 
-            "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
+            "${EVER_BUILD_DIR}/validator-engine-console/validator-engine-console" \
                 -k "${KEYS_DIR}/client" \
                 -p "${KEYS_DIR}/server.pub" \
                 -a ${LITE_SERVER_IP_ADDRESS}:${LITE_SERVER_PORT} \
@@ -523,7 +523,7 @@ create_elector_request() {
                 exit_and_clean 1 $LINENO
             fi
 
-            "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
+            "${EVER_BUILD_DIR}/validator-engine-console/validator-engine-console" \
                 -k "${KEYS_DIR}/client" \
                 -p "${KEYS_DIR}/server.pub" \
                 -a ${LITE_SERVER_IP_ADDRESS}:${LITE_SERVER_PORT} \
@@ -538,7 +538,7 @@ create_elector_request() {
                 exit_and_clean 1 $LINENO
             fi
 
-            "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
+            "${EVER_BUILD_DIR}/validator-engine-console/validator-engine-console" \
                 -k "${KEYS_DIR}/client" \
                 -p "${KEYS_DIR}/server.pub" \
                 -a ${LITE_SERVER_IP_ADDRESS}:${LITE_SERVER_PORT} \
@@ -548,7 +548,7 @@ create_elector_request() {
                 -c "addvalidatoraddr ${ELECTION_KEY} ${ELECTION_ADNL_KEY} ${ELECTION_STOP}" \
                 -c "quit"
 
-            "${TON_BUILD_DIR}/crypto/fift" \
+            "${EVER_BUILD_DIR}/crypto/fift" \
                 -I ${CRYPTO_LIBS} \
                 -s validator-elect-req.fif "${VALIDATOR_MSIG_ADDR}" "${ELECTION_START}" "${MAX_FACTOR}" "${ELECTION_ADNL_KEY}" "${ELECTIONS_WORK_DIR}/validator-to-sign.bin" \
                 &>"${ELECTIONS_WORK_DIR}/${VALIDATOR_NAME}-request-dump"
@@ -561,7 +561,7 @@ create_elector_request() {
                 exit_and_clean 1 $LINENO
             fi
 
-            "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
+            "${EVER_BUILD_DIR}/validator-engine-console/validator-engine-console" \
                 -k "${KEYS_DIR}/client" \
                 -p "${KEYS_DIR}/server.pub" \
                 -a ${LITE_SERVER_IP_ADDRESS}:${LITE_SERVER_PORT} \
@@ -585,7 +585,7 @@ create_elector_request() {
                 exit_and_clean 1 $LINENO
             fi
 
-            "${TON_BUILD_DIR}/crypto/fift" \
+            "${EVER_BUILD_DIR}/crypto/fift" \
                 -I ${CRYPTO_LIBS} \
                 -s validator-elect-signed.fif "${VALIDATOR_MSIG_ADDR}" "${ELECTION_START}" "${MAX_FACTOR}" "${ELECTION_ADNL_KEY}" "${PUBLIC_KEY}" "${SIGNATURE}" "${ELECTIONS_WORK_DIR}/validator-query.boc" \
                 &>"${ELECTIONS_WORK_DIR}/${VALIDATOR_NAME}-request-dump2"
@@ -613,8 +613,8 @@ create_elector_request() {
 submit_stake() {
     case ${VALIDATOR_TYPE} in
     "sdk")
-        TONOS_CLI_OUTPUT=$(timeout ${TONOS_CLI_TIMEOUT} ${UTILS_DIR}/tonos-cli account "${MSIG_ADDR}")
-        VALIDATOR_ACTUAL_BALANCE_NANO=$(echo "${TONOS_CLI_OUTPUT}" | awk '/balance/ {print $2}') # in nano tokens
+        EVER_CLI_OUTPUT=$(timeout ${EVER_CLI_TIMEOUT} ${UTILS_DIR}/ever-cli account "${MSIG_ADDR}")
+        VALIDATOR_ACTUAL_BALANCE_NANO=$(echo "${EVER_CLI_OUTPUT}" | awk '/balance/ {print $2}') # in nano tokens
         ;;
     "console")
         CONSOLE_OUTPUT=$(${UTILS_DIR}/console -C ${CONFIGS_DIR}/console.json -j -c "getaccount ${MSIG_ADDR}")
@@ -637,16 +637,16 @@ submit_stake() {
             exit_and_clean 1 $LINENO
         fi
 
-        echo "INFO: tonos-cli submitTransaction attempt..."
+        echo "INFO: ever-cli submitTransaction attempt..."
         set -x
-        if ! timeout ${TONOS_CLI_TIMEOUT} "${UTILS_DIR}/tonos-cli" call "${MSIG_ADDR}" submitTransaction \
+        if ! timeout ${EVER_CLI_TIMEOUT} "${UTILS_DIR}/ever-cli" call "${MSIG_ADDR}" submitTransaction \
             "{\"dest\":\"${DEPOOL_ADDR}\",\"value\":\"1000000000\",\"bounce\":true,\"allBalance\":false,\"payload\":\"${VALIDATOR_QUERY_BOC}\"}" \
             --abi "${CONFIGS_DIR}/SafeMultisigWallet.abi.json" \
             --sign "${KEYS_DIR}/msig.keys.json"; then
-            echo "INFO: tonos-cli submitTransaction attempt... FAIL"
+            echo "INFO: ever-cli submitTransaction attempt... FAIL"
             exit_and_clean 1 $LINENO
         else
-            echo "INFO: tonos-cli submitTransaction attempt... PASS"
+            echo "INFO: ever-cli submitTransaction attempt... PASS"
             date +"INFO: %F %T prepared for elections ${ACTIVE_ELECTION_ID}"
             echo "${ACTIVE_ELECTION_ID}" >"${ELECTIONS_WORK_DIR}/active-election-id-submitted"
         fi
@@ -680,8 +680,8 @@ submit_stake() {
             exit_and_clean 1 $LINENO
         fi
 
-        TONOS_CLI_OUTPUT=$(${UTILS_DIR}/tonos-cli getconfig 17)
-        MIN_STAKE=$(echo "${TONOS_CLI_OUTPUT}" | awk '/min_stake/ {print $2}' | tr -d '"' | tr -d ',') # in nanotokens
+        EVER_CLI_OUTPUT=$(${UTILS_DIR}/ever-cli getconfig 17)
+        MIN_STAKE=$(echo "${EVER_CLI_OUTPUT}" | awk '/min_stake/ {print $2}' | tr -d '"' | tr -d ',') # in nanotokens
         MIN_STAKE=$((MIN_STAKE / 1000000000))                                                          # in tokens
         echo "INFO: MIN_STAKE = ${MIN_STAKE} tokens"
 
@@ -706,19 +706,19 @@ submit_stake() {
         set -x
         case ${VALIDATOR_TYPE} in
         "sdk")
-            echo "INFO: tonos-cli submitTransaction attempt..."
-            if ! timeout ${TONOS_CLI_TIMEOUT} "${UTILS_DIR}/tonos-cli" call "${MSIG_ADDR}" submitTransaction \
+            echo "INFO: ever-cli submitTransaction attempt..."
+            if ! timeout ${EVER_CLI_TIMEOUT} "${UTILS_DIR}/ever-cli" call "${MSIG_ADDR}" submitTransaction \
                 "{\"dest\":\"${ELECTOR_ADDR}\",\"value\":\"${NANOSTAKE}\",\"bounce\":true,\"allBalance\":false,\"payload\":\"${VALIDATOR_QUERY_BOC}\"}" \
                 --abi "${CONFIGS_DIR}/SafeMultisigWallet.abi.json" \
                 --sign "${KEYS_DIR}/msig.keys.json"; then
-                echo "INFO: tonos-cli submitTransaction attempt... FAIL"
+                echo "INFO: ever-cli submitTransaction attempt... FAIL"
                 exit_and_clean 1 $LINENO
             else
-                echo "INFO: tonos-cli submitTransaction attempt... PASS"
+                echo "INFO: ever-cli submitTransaction attempt... PASS"
             fi
             ;;
         "console")
-            if ! "${UTILS_DIR}/tonos-cli" message "${MSIG_ADDR}" submitTransaction \
+            if ! "${UTILS_DIR}/ever-cli" message "${MSIG_ADDR}" submitTransaction \
                 "{\"dest\":\"${ELECTOR_ADDR}\",\"value\":\"${NANOSTAKE}\",\"bounce\":true,\"allBalance\":false,\"payload\":\"${VALIDATOR_QUERY_BOC}\"}" \
                 --abi "${CONFIGS_DIR}/SafeMultisigWallet.abi.json" \
                 --sign "${KEYS_DIR}/msig.keys.json" \

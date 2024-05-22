@@ -12,16 +12,16 @@ if ! command -v jq >/dev/null; then
 fi
 
 rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${TON_NODE_GITHUB_REPO}" ever-node
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node" && git checkout "${TON_NODE_GITHUB_COMMIT_ID}"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${EVER_NODE_GITHUB_REPO}" ever-node
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node" && git checkout "${EVER_NODE_GITHUB_COMMIT_ID}"
 
 rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/ton-labs-node-tools"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${TON_NODE_TOOLS_GITHUB_REPO}"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ton-labs-node-tools" && git checkout "${TON_NODE_TOOLS_GITHUB_COMMIT_ID}"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${EVER_NODE_TOOLS_GITHUB_REPO}"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ton-labs-node-tools" && git checkout "${EVER_NODE_TOOLS_GITHUB_COMMIT_ID}"
 
-rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/tonos-cli"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${TONOS_CLI_GITHUB_REPO}"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build/tonos-cli" && git checkout "${TONOS_CLI_GITHUB_COMMIT_ID}"
+rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-cli"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${EVER_CLI_GITHUB_REPO}"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-cli" && git checkout "${EVER_CLI_GITHUB_COMMIT_ID}"
 
 NODE_MEM_LIMIT_DYNAMIC="$((($(grep MemTotal /proc/meminfo | awk '{print $2}') / 1000 / 1000 - 1)))G"
 NODE_MEM_LIMIT="${NODE_MEM_LIMIT:-${NODE_MEM_LIMIT_DYNAMIC}}"

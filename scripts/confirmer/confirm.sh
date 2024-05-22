@@ -18,7 +18,7 @@ function f_check_trans() {
     W_PHRASE=$3 # seed phrase
     TRAN=0
 
-    OUTPUT=$(${L_PATH}tonos-cli run "${W_SOURCE}" getTransactions {} --abi ${L_PATH}SafeMultisigWallet.abi.json | sed -ne '/Result/,$ p' | sed 's/Result: //')
+    OUTPUT=$(${L_PATH}ever-cli run "${W_SOURCE}" getTransactions {} --abi ${L_PATH}SafeMultisigWallet.abi.json | sed -ne '/Result/,$ p' | sed 's/Result: //')
     N_TRAN=$(echo "${OUTPUT}" | jq '.transactions | length')
 
     if [ "${N_TRAN}" == "" ]; then
@@ -35,7 +35,7 @@ function f_check_trans() {
             if [ "${T_DEST}" == "${W_DEST}" ] && [ "${T_PAYLOAD}" != "te6ccgEBAQEAAgAAAA==" ]; then
                 # shellcheck disable=SC2086
                 # shellcheck disable=SC2015
-                ${L_PATH}tonos-cli call "${W_SOURCE}" confirmTransaction \
+                ${L_PATH}ever-cli call "${W_SOURCE}" confirmTransaction \
                     '{"transactionId":"'${T_ID}'"}' \
                     --abi ${L_PATH}SafeMultisigWallet.abi.json \
                     --sign "${W_PHRASE}" &&

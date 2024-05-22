@@ -4,9 +4,9 @@ FROM ubuntu:18.04 as build
 
 ARG RUST_VERSION
 
-COPY ever-node /tonlabs/ever-node/
-COPY ton-labs-node-tools /tonlabs/ton-labs-node-tools/
-COPY tonos-cli /tonlabs/tonos-cli
+COPY ever-node /everx-labs/ever-node/
+COPY ton-labs-node-tools /everx-labs/ton-labs-node-tools/
+COPY ever-cli /everx-labs/ever-cli
 
 # install deps
 ENV TZ=Europe/Moscow
@@ -46,14 +46,14 @@ COPY rust_install.sh /tmp/rust_install.sh
 
 RUN bash -c "/tmp/rust_install.sh ${RUST_VERSION}"
 
-WORKDIR /tonlabs/ever-node
+WORKDIR /everx-labs/ever-node
 RUN #cargo update && cargo build --release --features "metrics,compression"
 RUN cargo update && cargo build --release
 
-WORKDIR /tonlabs/ton-labs-node-tools
+WORKDIR /everx-labs/ton-labs-node-tools
 RUN cargo update && cargo build --release
 
-WORKDIR /tonlabs/tonos-cli
+WORKDIR /everx-labs/ever-cli
 RUN cargo update && cargo build --release
 
 FROM ubuntu:18.04
@@ -96,8 +96,7 @@ COPY rust_install.sh /tmp/rust_install.sh
 RUN bash -c "/tmp/rust_install.sh ${RUST_VERSION}"
 
 RUN mkdir -p /ever-node/tools
-#COPY --from=build /tonlabs/ever-node/target/release/ton_node /ever-node/ton_node_no_kafka_compression
-COPY --from=build /tonlabs/ever-node/target/release/ton_node /ever-node/ton_node_no_kafka
-COPY --from=build /tonlabs/ton-labs-node-tools/target/release/console /ever-node/tools/
-COPY --from=build /tonlabs/ton-labs-node-tools/target/release/keygen /ever-node/tools/
-COPY --from=build /tonlabs/tonos-cli/target/release/tonos-cli /ever-node/tools/
+COPY --from=build /everx-labs/ever-node/target/release/ever_node /ever-node/ever_node_no_kafka
+COPY --from=build /everx-labs/ton-labs-node-tools/target/release/console /ever-node/tools/
+COPY --from=build /everx-labs/ton-labs-node-tools/target/release/keygen /ever-node/tools/
+COPY --from=build /everx-labs/ever-cli/target/release/ever-cli /ever-node/tools/

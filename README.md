@@ -75,7 +75,7 @@ Use the following command to check if the node is synced:
 
 Script output example:
 ```
-tonlabs console 0.1.254
+everx-labs console 0.1.254
 COMMIT_ID: 
 BUILD_DATE: 2021-12-24 10:53:20 +0300
 COMMIT_DATE: 
@@ -110,21 +110,21 @@ If the `timediff` parameter is less than 10 seconds, synchronization with master
 
 There is a small difference between direct staking and DePool validators on this step:
 
-- For direct staking validator it is necessary to create and deploy a validator [SafeMultisig](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig) wallet in `-1` chain.
-- For a DePool validator it is necessary to create and deploy a validator [SafeMultisig](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig) wallet in `0` chain.
+- For direct staking validator it is necessary to create and deploy a validator [SafeMultisig](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig) wallet in `-1` chain.
+- For a DePool validator it is necessary to create and deploy a validator [SafeMultisig](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig) wallet in `0` chain.
 
-You can use [TONOS-CLI](https://github.com/tonlabs/tonos-cli) for this purpose. It should be [configured](https://github.com/tonlabs/tonos-cli) to connect to the main.ton.dev network.
+You can use [EVER-CLI](https://github.com/everx-labs/ever-cli) for this purpose. It should be [configured](https://github.com/everx-labs/ever-cli) to connect to the main.ton.dev network.
 
-Refer to [this document](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#3-create-wallet) for the detailed wallet creation procedure, or follow the links in the short guide below:
+Refer to [this document](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig#3-create-wallet) for the detailed wallet creation procedure, or follow the links in the short guide below:
 
-1. All wallet custodians should [create seed phrases and public keys](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#31-create-seed-phrases-and-public-keys-for-all-custodians) for themselves. At least three custodians are recommended for validator wallet, one of which will be used by the validator node. All seed phrases should be kept secret by their owners and securely backed up.
+1. All wallet custodians should [create seed phrases and public keys](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig#31-create-seed-phrases-and-public-keys-for-all-custodians) for themselves. At least three custodians are recommended for validator wallet, one of which will be used by the validator node. All seed phrases should be kept secret by their owners and securely backed up.
 2. The wallet deployer (who may or may not be one of the custodians) should gather the **public** keys from all custodians.
-3. The wallet deployer should obtain [SafeMultisig contract code](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#22-download-contract-files) from the repository.
-4. The wallet deployer should [generate deployment keys](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#32-generate-deployment-key-pair-file).
-5. The wallet deployer should [generate validator wallet](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#33-generate-wallet-address) address: **in -1 chain for direct staking validator or in 0 chain for a DePool validator**.
-6. Any user should [send at least 1 token](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#34-send-tokens-to-the-new-address-from-another-wallet) to the generated wallet address to create it in the blockchain.
-7. The wallet deployer should [deploy the wallet](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#35-deploy-wallet-set-custodians) contact to the blockchain and set all gathered public keys as its custodians. At this step the number of custodian signatures required to make transactions from the wallet is also set (>=2 recommended for validator wallets). Deploy to  -1 chain for direct staking validator or to 0 chain for a DePool validator.
-7. In case of direct staking, the funds for staking should be [transferred](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#46-create-transaction-online) to the newly created validator wallet.
+3. The wallet deployer should obtain [SafeMultisig contract code](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig#22-download-contract-files) from the repository.
+4. The wallet deployer should [generate deployment keys](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig#32-generate-deployment-key-pair-file).
+5. The wallet deployer should [generate validator wallet](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig#33-generate-wallet-address) address: **in -1 chain for direct staking validator or in 0 chain for a DePool validator**.
+6. Any user should [send at least 1 token](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig#34-send-tokens-to-the-new-address-from-another-wallet) to the generated wallet address to create it in the blockchain.
+7. The wallet deployer should [deploy the wallet](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig#35-deploy-wallet-set-custodians) contact to the blockchain and set all gathered public keys as its custodians. At this step the number of custodian signatures required to make transactions from the wallet is also set (>=2 recommended for validator wallets). Deploy to  -1 chain for direct staking validator or to 0 chain for a DePool validator.
+7. In case of direct staking, the funds for staking should be [transferred](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig#46-create-transaction-online) to the newly created validator wallet.
 
 Once the wallet is deployed, place 2 files on the validator node:
 
@@ -133,26 +133,26 @@ Once the wallet is deployed, place 2 files on the validator node:
 
 The node will use the wallet address and the keys provided to it to generate election requests each validation cycle.
 
-> **Note**: If the validator wallet requires more than 1 custodian signature to make transactions, make sure each transaction sent by the validator node is [confirmed](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#47-create-transaction-confirmation-online) by the required amount of custodians.
+> **Note**: If the validator wallet requires more than 1 custodian signature to make transactions, make sure each transaction sent by the validator node is [confirmed](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/safemultisig#47-create-transaction-confirmation-online) by the required amount of custodians.
     
 ## 6. Configure DePool
 
-For a DePool validator it is necessary to deploy a [DePool](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool) contract to workchain `0`.
+For a DePool validator it is necessary to deploy a [DePool](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool) contract to workchain `0`.
 
-You can use [TONOS-CLI](https://github.com/tonlabs/tonos-cli) for this purpose. It should be [configured](https://github.com/tonlabs/tonos-cli) to connect to the main.ton.dev network.
+You can use [EVER-CLI](https://github.com/everx-labs/ever-cli) for this purpose. It should be [configured](https://github.com/everx-labs/ever-cli) to connect to the main.ton.dev network.
 
-Refer to [this document](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#depool) for the detailed DePool creation procedure, or follow the links in the short guide below:
+Refer to [this document](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#depool) for the detailed DePool creation procedure, or follow the links in the short guide below:
 
-1. [Obtain contract code](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#2-prepare-depool-and-supporting-smart-contracts) from the repository.
-2. Generate [deployment keys](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#3-generate-deployment-keys).
-3. Calculate [contract addresses](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#4-calculate-contract-addresses).
-4. [Send tokens](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#5-send-coins-to-the-calculated-addresses) to the calculated addresses.
-5. [Deploy contracts](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#6-deploy-contracts). Make sure to specify your validator wallet in the DePool contract at this step.
-6. Configure DePool [state update method](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#7-configure-depool-state-update-method).
+1. [Obtain contract code](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#2-prepare-depool-and-supporting-smart-contracts) from the repository.
+2. Generate [deployment keys](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#3-generate-deployment-keys).
+3. Calculate [contract addresses](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#4-calculate-contract-addresses).
+4. [Send tokens](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#5-send-coins-to-the-calculated-addresses) to the calculated addresses.
+5. [Deploy contracts](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#6-deploy-contracts). Make sure to specify your validator wallet in the DePool contract at this step.
+6. Configure DePool [state update method](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#7-configure-depool-state-update-method).
 
-Once DePool is successfully deployed and configured to be regularly called to update its state, you can [make stakes](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#8-make-stakes) in it. Note that validator stakes must always exceed [validator assurance](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#61-deploy-depool-contract-to-the-basechain), otherwise DePool will not participate in elections.
+Once DePool is successfully deployed and configured to be regularly called to update its state, you can [make stakes](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#8-make-stakes) in it. Note that validator stakes must always exceed [validator assurance](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#61-deploy-depool-contract-to-the-basechain), otherwise DePool will not participate in elections.
 
-Also note, that DePool and supporting contracts balance should be [monitored and kept positive at all times](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#11-maintain-positive-balance-on-depool-and-supplementary-contracts).
+Also note, that DePool and supporting contracts balance should be [monitored and kept positive at all times](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#11-maintain-positive-balance-on-depool-and-supplementary-contracts).
 
 Once the validator wallet and the DePool are deployed, place 3 files on the validator node:
 
@@ -168,12 +168,12 @@ The script generating validator election requests (directly through multisig wal
 
 Adjust (specify new commit ID) `main.ton.dev/scripts/env.sh`:
 ```bash
-export TON_NODE_GITHUB_REPO="https://github.com/tonlabs/ton-labs-node.git"
-export TON_NODE_GITHUB_COMMIT_ID="master"
-export TON_NODE_TOOLS_GITHUB_REPO="https://github.com/tonlabs/ton-labs-node-tools.git"
-export TON_NODE_TOOLS_GITHUB_COMMIT_ID="master"
-export TONOS_CLI_GITHUB_REPO="https://github.com/tonlabs/tonos-cli.git"
-export TONOS_CLI_GITHUB_COMMIT_ID="master"
+export EVER_NODE_GITHUB_REPO="https://github.com/everx-labs/ever-node.git"
+export EVER_NODE_GITHUB_COMMIT_ID="master"
+export EVER_NODE_TOOLS_GITHUB_REPO="https://github.com/everx-labs  /ever-node-tools.git"
+export EVER_NODE_TOOLS_GITHUB_COMMIT_ID="master"
+export EVER_CLI_GITHUB_REPO="https://github.com/everx-labs/ever-cli.git"
+export EVER_CLI_GITHUB_COMMIT_ID="master"
 ```
 
 Upgrade the node:
@@ -265,7 +265,7 @@ root:
 
 loggers:
   # node messages
-  ton_node:
+  ever_node:
     level: trace
   boot:
     level: trace
@@ -312,7 +312,7 @@ loggers:
 
 The currently configured targets are the following:
 
-`ton_node`: node-related messages, except initial boot and sync, block exchange with other nodes
+`ever_node`: node-related messages, except initial boot and sync, block exchange with other nodes
 
 `boot`: initial boot messages, creation of trusted key block chain, loading blockchain state
 
@@ -346,7 +346,7 @@ To migrate your validator from legacy C++ node to Rust node, complete the follow
 
 1. Set up a new host for the Rust node, according to steps [1](#1-system-requirements)-[3](#3-deploy-rust-validator-node) of this document.
 2. Wait for node to sync. Check sync according to step [4](#4-check-node-synchronization) of this document.
-3. Stop the C++ node sending election requests (by default - disable [scheduling of the validator script](https://github.com/tonlabs/main.ton.dev#32-run-validator-script)). **Do not shut down the C++ validator itself**, let it finish the current round.
+3. Stop the C++ node sending election requests (by default - disable [scheduling of the validator script](https://github.com/everx-labs/main.ton.dev#32-run-validator-script)). **Do not shut down the C++ validator itself**, let it finish the current round.
 4. Configure validator wallet and corresponding keys, optionally - DePool (copy them from C++ node files to Rust Node files). By default:
     1. Copy validator wallet address from `~/ton-keys/$(hostname -s).addr` file on the C++ node to `/ever-node/configs/${VALIDATOR_NAME}.addr` on the Rust Node.
     2. Copy validator wallet keys from `/ton-keys/msig.keys.json` on the C++ node to `/ever-node/configs/keys/msig.keys.json` on the Rust Node.
@@ -396,5 +396,5 @@ Make sure you are running all docker-compose commands from the `main.ton.dev/doc
 
 ## 5. DePool state not updating
 
-It's recommended to send at least two [ticktocks](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#7-configure-depool-state-update-method) while the elections are open.
-For rust node you can use the [provided](https://github.com/tonlabs/main.ton.dev/blob/master/docker-compose/ever-node/scripts/send_depool_tick_tock.sh) ticktock script, which sends 5 ticktocks after the elections open.
+It's recommended to send at least two [ticktocks](https://github.com/everx-labs/ton-labs-contracts/tree/master/solidity/depool#7-configure-depool-state-update-method) while the elections are open.
+For rust node you can use the [provided](https://github.com/everx-labs/main.ton.dev/blob/master/docker-compose/ever-node/scripts/send_depool_tick_tock.sh) ticktock script, which sends 5 ticktocks after the elections open.

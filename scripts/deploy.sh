@@ -33,16 +33,16 @@ cd "${DOCKER_COMPOSE_DIR}/statsd/" && docker-compose pull
 cd "${DOCKER_COMPOSE_DIR}/statsd/" && docker-compose up -d
 
 rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${TON_NODE_GITHUB_REPO}" ever-node
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node" && git checkout "${TON_NODE_GITHUB_COMMIT_ID}"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${EVER_NODE_GITHUB_REPO}" ever-node
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node" && git checkout "${EVER_NODE_GITHUB_COMMIT_ID}"
 
 rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/ton-labs-node-tools"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${TON_NODE_TOOLS_GITHUB_REPO}"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ton-labs-node-tools" && git checkout "${TON_NODE_TOOLS_GITHUB_COMMIT_ID}"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${EVER_NODE_TOOLS_GITHUB_REPO}"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ton-labs-node-tools" && git checkout "${EVER_NODE_TOOLS_GITHUB_COMMIT_ID}"
 
-rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/tonos-cli"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${TONOS_CLI_GITHUB_REPO}"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build/tonos-cli" && git checkout "${TONOS_CLI_GITHUB_COMMIT_ID}"
+rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-cli"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${EVER_CLI_GITHUB_REPO}"
+cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-cli" && git checkout "${EVER_CLI_GITHUB_COMMIT_ID}"
 
 rm -f "${DOCKER_COMPOSE_DIR}/ever-node/configs/SafeMultisigWallet.abi.json"
 cd "${DOCKER_COMPOSE_DIR}/ever-node/configs"
