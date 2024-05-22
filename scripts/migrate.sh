@@ -6,7 +6,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 
 
 rm -rf "${DOCKER_COMPOSE_DIR}/ton-node/build/ton-node"
-rm -rf "${DOCKER_COMPOSE_DIR}/ton-node/build/ton-labs-node-tools"
+rm -rf "${DOCKER_COMPOSE_DIR}/ton-node/build/ever-node-tools"
 rm -rf "${DOCKER_COMPOSE_DIR}/ton-node/build/ever-cli"
 
 # docker run --rm \
