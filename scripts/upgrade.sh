@@ -15,10 +15,6 @@ rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node"
 cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${EVER_NODE_GITHUB_REPO}" ever-node
 cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node" && git checkout "${EVER_NODE_GITHUB_COMMIT_ID}"
 
-rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node-tools"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${EVER_NODE_TOOLS_GITHUB_REPO}"
-cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-node-tools" && git checkout "${EVER_NODE_TOOLS_GITHUB_COMMIT_ID}"
-
 rm -rf "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-cli"
 cd "${DOCKER_COMPOSE_DIR}/ever-node/build" && git clone --recursive "${EVER_CLI_GITHUB_REPO}"
 cd "${DOCKER_COMPOSE_DIR}/ever-node/build/ever-cli" && git checkout "${EVER_CLI_GITHUB_COMMIT_ID}"

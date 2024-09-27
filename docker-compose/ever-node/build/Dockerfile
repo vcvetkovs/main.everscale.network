@@ -5,7 +5,6 @@ FROM ubuntu:18.04 as build
 ARG RUST_VERSION
 
 COPY ever-node /everx-labs/ever-node/
-COPY ever-node-tools /everx-labs/ever-node-tools/
 COPY ever-cli /everx-labs/ever-cli
 
 # install deps
@@ -47,9 +46,6 @@ COPY rust_install.sh /tmp/rust_install.sh
 RUN bash -c "/tmp/rust_install.sh ${RUST_VERSION}"
 
 WORKDIR /everx-labs/ever-node
-RUN cargo update && cargo build --release
-
-WORKDIR /everx-labs/ever-node-tools
 RUN cargo update && cargo build --release
 
 WORKDIR /everx-labs/ever-cli
@@ -96,6 +92,5 @@ RUN bash -c "/tmp/rust_install.sh ${RUST_VERSION}"
 
 RUN mkdir -p /ever-node/tools
 COPY --from=build /everx-labs/ever-node/target/release/ever-node /ever-node/ever_node_no_kafka
-COPY --from=build /everx-labs/ever-node-tools/target/release/console /ever-node/tools/
-COPY --from=build /everx-labs/ever-node-tools/target/release/keygen /ever-node/tools/
+COPY --from=build /everx-labs/ever-node/target/release/* /ever-node/tools/
 COPY --from=build /everx-labs/ever-cli/target/release/ever-cli /ever-node/tools/
