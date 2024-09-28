@@ -19,6 +19,6 @@ export EVER_NODE_GITHUB_REPO="https://github.com/everx-labs/ever-node.git"
 export EVER_NODE_GITHUB_COMMIT_ID="master"
 export EVER_CLI_GITHUB_REPO="https://github.com/everx-labs/ever-cli.git"
 export EVER_CLI_GITHUB_COMMIT_ID="master"
-export DEPOOL_ENABLE="no"
+export DEPOOL_ENABLE="yes"
 # Calculated dynamically (total RAM - 1GB), uncomment if you want to agjust it manually
 #export NODE_MEM_LIMIT="127G"
